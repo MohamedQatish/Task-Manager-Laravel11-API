@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -35,26 +36,27 @@ class UserController extends Controller
             'password' => 'required|string'
         ]);
         if (!Auth::attempt($request->only('email', 'password')))
-        return response()->json(
-            [
-                'message' => 'invalid email or password'
-            ],
-            401
-        );
+            return response()->json(
+                [
+                    'message' => 'invalid email or password'
+                ],
+                401
+            );
         $user = User::where('email', $request->email)->FirstOrFail();
-        $token=$user->createToken('auth_Token')->plainTextToken;
+        $token = $user->createToken('auth_Token')->plainTextToken;
         return response()->json([
             'message' => 'Login Successful',
             'User' => $user,
-            'Token'=>$token
+            'Token' => $token
         ], 201);
     }
 
     public function logout(Request $request)
     {
-    $request->user()->currentAccessToken()->delete();
-    return response()->json([
-        'message' => 'logout Successful']);
+        $request->user()->currentAccessToken()->delete();
+        return response()->json([
+            'message' => 'logout Successful'
+        ]);
     }
 
 
@@ -67,5 +69,12 @@ class UserController extends Controller
     {
         $tasks = User::findOrFail($id)->tasks;
         return response()->json($tasks, 200);
+    }
+
+    public function GetUser()
+    {
+        $user_id = Auth::user()->id;
+        $userData = User::with('profile')->findOrFail($user_id);
+        return new UserResource($userData);
     }
 }

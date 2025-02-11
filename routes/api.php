@@ -6,9 +6,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+
 
 
 
@@ -25,6 +23,8 @@ Route::get('/{id}', [ProfileController::class,'show']);
 Route::put('/{id}', [ProfileController::class,'update']);
 });
 
+
+Route::get('user', [UserController::class,'GetUser']);
 
 Route::get('user/{id}/profile', [UserController::class,'getProfile']);
 Route::get('user/{id}/tasks', [UserController::class,'getUserTasks']);
